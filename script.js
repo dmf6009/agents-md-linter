@@ -1,0 +1,30 @@
+(()=>{"use strict";const $=s=>document.querySelector(s),input=$("#input"),report=$("#report"),stats=$("#stats");if(!input)return;const good=`# Repository instructions
+
+## Scope
+These instructions apply to the repository root. A nested AGENTS.md takes precedence for files in its directory.
+
+## Setup
+- Run \`pnpm install\`.
+- Start development with \`pnpm dev\`.
+
+## Change rules
+- Keep changes scoped to the request.
+- Do not edit generated files under \`dist/\`; run \`pnpm build\` instead.
+- Never commit \`.env\` files or credentials.
+
+## Verification
+- Run \`pnpm lint\` for all code changes.
+- Run \`pnpm test\`; add focused tests for changed behavior.
+- Run \`pnpm build\` when exports or configuration change.
+
+## Pull requests
+Summarize changed behavior, tests run, and any remaining risk.`;
+const bad=`# Agent rules
+Always do everything needed. Follow best practices. Never ask questions.
+Use sudo when required and skip tests if they are slow.
+The API key is sk-proj-exampleabcdefghijklmnopqrstuv.
+Make sure the code is good.`;
+function update(){const words=(input.value.trim().match(/\S+/g)||[]).length;stats.textContent=`${words} words · ~${Math.ceil(input.value.length/4)} tokens`}
+function lint(){const t=input.value,low=t.toLowerCase(),items=[];const add=(level,title,detail)=>items.push({level,title,detail});if(!t.trim()){showError("Paste AGENTS.md content first.");return}const headings=[...t.matchAll(/^#{1,6}\s+(.+)$/gm)].map(x=>x[1].toLowerCase());const commands=[...t.matchAll(/`([^`\n]+)`/g)].map(x=>x[1]);if(!headings.length)add("error","No Markdown sections","Use descriptive headings for setup, changes, verification, and handoff.");if(!/(setup|install|development|getting started)/i.test(headings.join(" ")))add("warning","Setup instructions are missing","State the exact dependency installation and local startup commands.");if(!/(test|verification|quality|validation)/i.test(headings.join(" ")))add("error","Verification section is missing","Tell agents which checks prove a change is ready.");if(!commands.length)add("error","No concrete commands found","Wrap exact commands in backticks so agents do not have to infer them.");if(!commands.some(x=>/(test|pytest|vitest|jest|cargo test|go test|rspec)/i.test(x)))add("warning","No test command found","Include the repository's actual test command and when focused versus full tests are required.");if(!commands.some(x=>/(lint|eslint|ruff|clippy|golangci|typecheck|tsc|check)/i.test(x)))add("warning","No lint or static-check command found","Document the fastest relevant quality check.");if(!/(scope|appl(?:y|ies)|nested|precedence|directory)/i.test(low))add("warning","Instruction scope is ambiguous","Explain where this file applies and how nested AGENTS.md files affect precedence.");if(!/(generated|do not edit|migration|vendor|lockfile)/i.test(low))add("warning","Protected or generated files are not described","Name generated outputs, vendored paths, migrations, or files requiring special handling.");if(!/(pull request|pr |handoff|summary|report)/i.test(low))add("warning","Handoff expectations are missing","Specify what the final summary or pull request must include.");if(/follow (?:all )?best practices|make (?:sure )?(?:it|the code) (?:is )?good|do everything needed|as appropriate|when necessary/i.test(low))add("warning","Vague instruction language","Replace broad advice with observable commands, paths, examples, or completion criteria.");if(/\bnever ask\b/.test(low)&&/\bask\b/.test(low.replace("never ask","")))add("error","Potentially conflicting ask rules","Unconditional “never ask” can conflict with approval or clarification requirements.");if(/\balways\b[\s\S]{0,80}\bnever\b|\bnever\b[\s\S]{0,80}\balways\b/i.test(t))add("warning","Absolute rules may conflict","Scope always/never statements to a concrete action, path, or condition.");if(/(?:sk-(?:proj-)?[a-z0-9_-]{16,}|gh[pousr]_[a-z0-9_]{16,}|akia[0-9a-z]{16}|-----begin .*private key)/i.test(t))add("error","Credential-like value detected","Remove and rotate secrets before committing repository instructions.");if(/(?:sudo|doas)\s+|rm\s+-rf\s+(?:\/|~|\*)|git\s+push\s+--force|--no-verify/i.test(t))add("error","Risky bypass or destructive command","Do not normalize privilege escalation, broad deletion, force pushes, or skipped checks in shared instructions.");const words=(t.match(/\S+/g)||[]).length;if(words>1800)add("warning","Instruction file is very large",`${words} words increases context cost. Move deep reference material to linked documents.`);if(words<60)add("warning","Instruction file is unusually short","It may not contain enough repository-specific setup, verification, and scope detail.");if(!items.some(x=>x.level==="error")&&!items.some(x=>x.level==="warning"))add("pass","No high-signal instruction smells detected","Review the file whenever commands, repository layout, or team policy changes.");render(items,words,commands.length)}
+function render(items,words,commands){const errors=items.filter(x=>x.level==="error").length,warnings=items.filter(x=>x.level==="warning").length,score=Math.max(0,100-errors*18-warnings*7);report.className="report";report.innerHTML=`<div class="score ${score<50?"bad":score<80?"warn":""}"><strong>${score}</strong><div><b>Instruction quality score</b><p>${words} words · ${commands} command examples · ${errors} errors · ${warnings} warnings</p></div></div>`+items.map(x=>`<div class="issue ${x.level}"><b>${x.level.toUpperCase()}</b><h4>${esc(x.title)}</h4><p>${esc(x.detail)}</p></div>`).join("")}
+function showError(m){report.className="report";report.innerHTML=`<div class="issue error"><b>ERROR</b><h4>Could not lint</h4><p>${esc(m)}</p></div>`}const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));input.addEventListener("input",update);$("#good").addEventListener("click",()=>{input.value=good;update()});$("#bad").addEventListener("click",()=>{input.value=bad;update()});$("#lint").addEventListener("click",lint);document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();lint()}});update()})();

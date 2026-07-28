@@ -1,0 +1,7 @@
+name = "agents-md-linter-domain"
+main = "worker-proxy.js"
+compatibility_date = "2026-07-28"
+
+[[routes]]
+pattern = "agentslint.guagua-alvin.top"
+custom_domain = true

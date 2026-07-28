@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AGENTS.md Generator — Repository Instruction Template</title><meta name="description" content="Generate a concise AGENTS.md template with setup, scope, change rules, verification, generated-file policy, and pull request handoff sections."><link rel="canonical" href="https://agentslint.guagua-alvin.top/agents-md-generator"><link rel="icon" href="/assets/favicon.svg"><link rel="stylesheet" href="/styles.css"></head><body><header><a class="brand" href="/"><span>A</span>AgentFile Check</a><nav><a href="/#linter">Linter</a><a href="/agents-md-best-practices">Guide</a></nav></header><main class="article"><p class="kicker">STARTING TEMPLATE</p><h1>Generate AGENTS.md from repository facts.</h1><p class="lede">The best instruction file is specific enough to execute and short enough to remain useful on every task.</p><article><h2>Recommended structure</h2><pre><code># Repository instructions
+
+## Scope
+These instructions apply to ...
+
+## Setup
+- Install: `...`
+- Start: `...`
+
+## Change rules
+- ...
+- Do not edit generated files under ...
+
+## Verification
+- Lint: `...`
+- Test: `...`
+- Build: `...`
+
+## Pull requests
+Report changed behavior, checks run, and remaining risk.</code></pre><h2>Fill facts, not slogans</h2><p>Replace every placeholder with a real command, path, ownership boundary, or observable completion condition. Delete sections that do not apply instead of leaving generic advice.</p><h2>Nested repositories</h2><p>Use nested AGENTS.md files when a package has materially different commands or rules. State precedence at the root and keep local instructions close to the code they govern.</p><div class="cta"><a href="/#linter">Lint the generated file →</a></div></article></main></body></html>

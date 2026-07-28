@@ -1,0 +1,7 @@
+# AgentFile Check
+Local AGENTS.md instruction quality linter.
+- / — linter
+- /agents-md-generator — starting template
+- /agents-md-best-practices — authoring guide
+- /claude-md-vs-agents-md — file comparison
+The score is a heuristic review aid, not an official AGENTS.md conformance result.
